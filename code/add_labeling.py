@@ -9,8 +9,8 @@ import glob
 class Golf:
 	def __init__(self, MP4):
 		self.NAME = MP4
-		#0,1,2 Not,Hit,Hole in
-		self.classify = 0
+		
+		self.classify = 5
 		
 		self.cap = cv2.VideoCapture(MP4)
 		if(not self.cap.isOpened()):
@@ -24,16 +24,33 @@ class Golf:
 		self.AREA_TH = 80 #area threshold 
 		self.CENTER_X = 301
 		self.CENTER_Y = 204
+		#362,205 Good Shot
+		self.PERFECTSHOT = math.sqrt(((362 - self.CENTER_X)**2 + (205 - self.CENTER_Y)**2)) 
+		self.GOODSHOT = math.sqrt(( - self.CENTER_X)**2 + ( - self.CENTER_Y)**2) #ToDo ADD PIXEL
+		self.RADIUS = math.sqrt(((487 - self.CENTER_X)**2 + (205 - self.CENTER_Y)**2))
 		#361,256
 
-	def check_hit(self,x,y, rad):
+	def label(self, x,y):
+		theta = math.atan2(y,x)
+		# 1,2,3,4 = GoodLeftFront,GoodRightFront,GoodRightRear,GoodLeftRear
+		if (((theta > 0) and (theta <= math.pi/2)) and ((math.sqrt(x**2 + y**2) >= self.PERFECTSHOT) and (math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
+			self.classify = 2
+		elif((theta > math.pi/2) and (theta <= math.pi) and ((math.sqrt(x**2 + y**2) >= self.PERFECTSHOT) and(math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
+			self.classify = 1
+		elif ((theta > math.pi) and (theta <= ((math.pi/2)*3)) and((math.sqrt(x**2 + y**2) >= self.PERFECTSHOT) and (math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
+			self.classify = 4
+		elif ((theta <= ((math.pi/2)*3)) and (theta <= (math.pi*2)) and((math.sqrt(x**2 + y**2) >= self.PERFECTSHOT) and (math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
+			self.classify = 3
+		else:
+			self.classify = 5
+	'''def check_hit(self,x,y, rad):
 		if(math.sqrt((x)**2 + (y)**2) <= (math.sqrt((self.CENTER_X - 319)**2+(self.CENTER_Y - 204)**2) + rad)):
 			print("hit")
 			self.classify = 1
 	def check_hole_in(self, lst_x, lst_y):
 		if (math.sqrt(lst_x[-1]**2 + lst_y[-1]**2) < math.sqrt((self.CENTER_X - 319)**2 + (self.CENTER_Y - 204)**2)):
 			self.classify = 2
-	
+	'''
 	def findObjectAndDraw(self,bimage, src, lst_x, lst_y, t):
 		res = src.copy()
 		bimage = cv2.erode(bimage, None, 5)
@@ -50,20 +67,20 @@ class Golf:
 				rad = int(rad)
 				#print(rad)
 				cv2.circle(res, (x,y),rad, (0,255,0),)
-				#print('(x,y) = (%d, %d)'%(x,y))
+				print('(x,y) = (%d, %d)'%(x,y))
 				if(rad < 15):
-					self.check_hit(x,y,rad)
-				if (t >= 30):
-					if (len(lst_x) != 0)  and ((lst_x[-1] == x) and (lst_y[-1] == y)):
-						continue
-					else:
-						lst_x.append(x)
-						lst_y.append(y)
+					#self.check_hit(x,y,rad)
+					if (t >= 30):
+						if (len(lst_x) != 0)  and ((lst_x[-1] == x) and (lst_y[-1] == y)):
+							continue
+						else:
+							lst_x.append(x)
+							lst_y.append(y)
 		return res, lst_x,lst_y
 
 	def Perspective(self,img):
 		rows, cols, ch = img.shape
-		ptr1 = np.float32([[140,32],[106,474],[712,35],[676,539]])
+		ptr1 = np.float32([[97,47],[90,481],[671,10],[660,515]])
 		ptr2 = np.float32([[0,0],[0,399],[503,0],[503,399]])
 		M = cv2.getPerspectiveTransform(ptr1,ptr2)
 		result = cv2.warpPerspective(img, M, (504,400))
@@ -78,7 +95,7 @@ class Golf:
 
 		
 
-	def execute(self):
+	def execute(self, count):
 		t = 0 
 		data_x = []
 		data_y = []
@@ -87,7 +104,7 @@ class Golf:
 			if not ret:
 				break
 			frame = cv2.resize(frame, (self.width/2,self.height/2))
-			frame = self.rotate(frame)
+			#frame = self.rotate(frame)
 			frame = self.Perspective(frame)	
 			frame = cv2.circle(frame,(self.CENTER_X,self.CENTER_Y), 1, (0,0,255), -1)
 			t += 1
@@ -97,35 +114,41 @@ class Golf:
 			bimage2 = self.bgMog2.apply(blur)
 			dst2, data_x, data_y = self.findObjectAndDraw(bimage2, frame, data_x, data_y, t)
 			cv2.imshow('bgMog2', dst2)
+			cv2.imwrite("/home/hyungjun/project/golf/test.jpeg", frame)
 			#print(self.NAME)		
 			key = cv2.waitKey(1)
 			if key == 27:
 				break
 		if(len(data_x) != 0 ):	
-			self.check_hole_in(data_x, data_y)
-		f.write(unicode(self.NAME))
-		f.write(unicode('\n'))
-		f.write(unicode(data_x))
-		f.write(unicode('\n'))
-		f.write(unicode(data_y))
-		f.write(unicode('\n'))
+			#self.check_hole_in(data_x, data_y)
+			self.label(data_x[-1], data_y[-1])
+		f.write(unicode(count))
+		#f.write(unicode('\n'))
+		#f.write(unicode(data_x))
+		#f.write(unicode('\n'))
+		#f.write(unicode(data_y))
+		f.write(unicode(' '))
 		f.write(unicode(self.classify))
 		f.write(unicode('\n'))
-		f.write(unicode('-----------------------------------------------------------------------------------------------'))
+		#f.write(unicode('----------------------------------------------------------------------------------------------'))
+		
 		if self.cap.isOpened():
 			self.cap.release()
 		cv2.destroyAllWindows()
 
 if __name__ == '__main__':
 	
-	MP4 = glob.glob('/home/hyungjun/project/golf/Video/2019_01_14_1/*.MP4')
+	MP4 = glob.glob('/home/hyungjun/project/golf/Video/2019_01_18_2/C0757.MP4')
 	MP4.sort()
 	filename = "2019_01_14_1.txt"	
 	print('===================start=====================')
 	f = io.open(filename, mode = 'wt', encoding = 'utf-8')
+	count = 1
 	for i in MP4:
+		
 		golf = Golf(i)
-		golf.execute()
+		golf.execute(count)
+		count += 1
 			
 	f.close()
 	print('====================End======================')

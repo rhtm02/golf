@@ -25,6 +25,12 @@ class Golf:
 		self.CENTER_X = 301
 		self.CENTER_Y = 204
 		#361,256
+	#todo add labeling
+	#def label(self, x,y, rad):
+		
+
+
+
 
 	def check_hit(self,x,y, rad):
 		if(math.sqrt((x)**2 + (y)**2) <= (math.sqrt((self.CENTER_X - 319)**2+(self.CENTER_Y - 204)**2) + rad)):
@@ -53,12 +59,12 @@ class Golf:
 				#print('(x,y) = (%d, %d)'%(x,y))
 				if(rad < 15):
 					self.check_hit(x,y,rad)
-				if (t >= 30):
-					if (len(lst_x) != 0)  and ((lst_x[-1] == x) and (lst_y[-1] == y)):
-						continue
-					else:
-						lst_x.append(x)
-						lst_y.append(y)
+					if (t >= 30):
+						if (len(lst_x) != 0)  and ((lst_x[-1] == x) and (lst_y[-1] == y)):
+							continue
+						else:
+							lst_x.append(x)
+							lst_y.append(y)
 		return res, lst_x,lst_y
 
 	def Perspective(self,img):
