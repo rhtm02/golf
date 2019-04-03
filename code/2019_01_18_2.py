@@ -25,13 +25,14 @@ class Golf:
 		self.CENTER_X = 301
 		self.CENTER_Y = 204
 		#362,205 Good Shot
-		self.PERFECTSHOT = math.sqrt(((362 - self.CENTER_X)**2 + (205 - self.CENTER_Y)**2)) 
-		self.GOODSHOT = math.sqrt(( - self.CENTER_X)**2 + ( - self.CENTER_Y)**2) # ToDo ADD PIXEL
+		self.PERFECTSHOT = math.sqrt(((364 - self.CENTER_X)**2 + (205 - self.CENTER_Y)**2)) 
+		self.GOODSHOT = math.sqrt((485- self.CENTER_X)**2 + (205 - self.CENTER_Y)**2) #ToDo ADD PIXEL
 		self.RADIUS = math.sqrt(((487 - self.CENTER_X)**2 + (205 - self.CENTER_Y)**2))
 		#361,256
 
 	def label(self, x,y):
 		theta = math.atan2(y,x)
+		print(theta,math.pi)
 		# 1,2,3,4 = GoodLeftFront,GoodRightFront,GoodRightRear,GoodLeftRear
 		if (((theta > 0) and (theta <= math.pi/2)) and ((math.sqrt(x**2 + y**2) >= self.PERFECTSHOT) and (math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
 			self.classify = 2
@@ -43,6 +44,7 @@ class Golf:
 			self.classify = 3
 		else:
 			self.classify = 5
+		print(self.classify)
 	'''
 	def check_hit(self,x,y, rad):
 		if(math.sqrt((x)**2 + (y)**2) <= (math.sqrt((self.CENTER_X - 319)**2+(self.CENTER_Y - 204)**2) + rad)):
@@ -119,6 +121,8 @@ class Golf:
 			key = cv2.waitKey(1)
 			if key == 27:
 				break
+		
+		
 		if(len(data_x) != 0 ):	
 			#self.check_hole_in(data_x, data_y)
 			self.label(data_x[-1], data_y[-1])

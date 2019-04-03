@@ -95,13 +95,13 @@ class Golf:
 			gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 			blur = cv2.GaussianBlur(frame, (5,5), 0.0)
 			bimage2 = self.bgMog2.apply(blur)
-			dst2, data_x, data_y = self.findObjectAndDraw(bimage2, frame, data_x, data_y, t)
+			dst2, lst_x, lst_y = self.findObjectAndDraw(bimage2, frame, data_x, data_y, t)
 			cv2.imshow('bgMog2', dst2)
 			#print(self.NAME)		
 			key = cv2.waitKey(1)
 			if key == 27:
 				break
-		if(len(data_x) != 0 ):	
+		if(len(lst_x) != 0 ):	
 			self.check_hole_in(data_x, data_y)
 		f.write(unicode(count))
 		f.write(unicode(' '))

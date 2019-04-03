@@ -25,8 +25,8 @@ class Golf:
 		self.CENTER_X = 301
 		self.CENTER_Y = 204
 		#362,205 Good Shot
-		self.PERFECTSHOT = math.sqrt(((362 - self.CENTER_X)**2 + (205 - self.CENTER_Y)**2)) 
-		self.GOODSHOT = math.sqrt(( - self.CENTER_X)**2 + ( - self.CENTER_Y)**2) #ToDo ADD PIXEL
+		self.PERFECTSHOT = math.sqrt(((320 - self.CENTER_X)**2 + (205 - self.CENTER_Y)**2)) 
+		self.GOODSHOT = math.sqrt((364- self.CENTER_X)**2 + (205 - self.CENTER_Y)**2) #ToDo ADD PIXEL
 		self.RADIUS = math.sqrt(((487 - self.CENTER_X)**2 + (205 - self.CENTER_Y)**2))
 		#361,256
 
@@ -107,6 +107,7 @@ class Golf:
 			#frame = self.rotate(frame)
 			frame = self.Perspective(frame)	
 			frame = cv2.circle(frame,(self.CENTER_X,self.CENTER_Y), 1, (0,0,255), -1)
+			frame = cv2.circle(frame,(485,205), 1, (0,0,255), -1)
 			t += 1
 			#print('t = %d' % t)
 			gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -114,7 +115,8 @@ class Golf:
 			bimage2 = self.bgMog2.apply(blur)
 			dst2, data_x, data_y = self.findObjectAndDraw(bimage2, frame, data_x, data_y, t)
 			cv2.imshow('bgMog2', dst2)
-			cv2.imwrite("/home/hyungjun/project/golf/test.jpeg", frame)
+			#for capture
+			cv2.imwrite("/home/hyungjun/project/golf/test.png", frame)
 			#print(self.NAME)		
 			key = cv2.waitKey(1)
 			if key == 27:
