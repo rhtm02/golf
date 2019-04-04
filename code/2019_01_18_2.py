@@ -33,6 +33,14 @@ class Golf:
 	def label(self, x,y):
 		theta = math.atan2(y,x)
 		print(theta,math.pi)
+		if (x >= 0) and (y >= 0):
+			theta = theta
+		elif (x < 0) and (y >= 0):
+			theta = theta + math.pi
+		elif (x < 0) and (y < 0):
+			theta = theta + 2*math.pi
+		else:
+			theta = theta
 		# 1,2,3,4 = GoodLeftFront,GoodRightFront,GoodRightRear,GoodLeftRear
 		if (((theta > 0) and (theta <= math.pi/2)) and ((math.sqrt(x**2 + y**2) >= self.PERFECTSHOT) and (math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
 			self.classify = 2
@@ -40,7 +48,7 @@ class Golf:
 			self.classify = 1
 		elif ((theta > math.pi) and (theta <= ((math.pi/2)*3)) and((math.sqrt(x**2 + y**2) >= self.PERFECTSHOT) and (math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
 			self.classify = 4
-		elif ((theta <= ((math.pi/2)*3)) and (theta <= (math.pi*2)) and((math.sqrt(x**2 + y**2) >= self.PERFECTSHOT) and (math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
+		elif ((theta > ((math.pi/2)*3)) and (theta <= (math.pi*2)) and((math.sqrt(x**2 + y**2) >= self.PERFECTSHOT) and (math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
 			self.classify = 3
 		else:
 			self.classify = 5
