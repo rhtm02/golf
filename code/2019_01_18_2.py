@@ -36,23 +36,27 @@ class Golf:
 		if (x >= 0) and (y >= 0):
 			theta = theta
 		elif (x < 0) and (y >= 0):
-			theta = theta + math.pi
+			theta = theta
 		elif (x < 0) and (y < 0):
 			theta = theta + 2*math.pi
 		else:
-			theta = theta
+			theta = theta + 2*math.pi
+		print(theta)
 		# 1,2,3,4 = GoodLeftFront,GoodRightFront,GoodRightRear,GoodLeftRear
-		if (((theta > 0) and (theta <= math.pi/2)) and ((math.sqrt(x**2 + y**2) >= self.PERFECTSHOT) and (math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
+		if (self.PERFECTSHOT >= math.sqrt(x**2 + y**2)):
+			self.classify = 0
+		elif (((theta > 0) and (theta <= math.pi/2)) and ((math.sqrt(x**2 + y**2) > self.PERFECTSHOT) and (math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
 			self.classify = 2
-		elif((theta > math.pi/2) and (theta <= math.pi) and ((math.sqrt(x**2 + y**2) >= self.PERFECTSHOT) and(math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
+		elif((theta > math.pi/2) and (theta <= math.pi) and ((math.sqrt(x**2 + y**2) > self.PERFECTSHOT) and(math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
 			self.classify = 1
-		elif ((theta > math.pi) and (theta <= ((math.pi/2)*3)) and((math.sqrt(x**2 + y**2) >= self.PERFECTSHOT) and (math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
+		elif ((theta > math.pi) and (theta <= ((math.pi/2)*3)) and((math.sqrt(x**2 + y**2) > self.PERFECTSHOT) and (math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
 			self.classify = 4
-		elif ((theta > ((math.pi/2)*3)) and (theta <= (math.pi*2)) and((math.sqrt(x**2 + y**2) >= self.PERFECTSHOT) and (math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
+		elif ((theta > ((math.pi/2)*3)) and (theta <= (math.pi*2)) and((math.sqrt(x**2 + y**2) > self.PERFECTSHOT) and (math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
 			self.classify = 3
 		else:
 			self.classify = 5
 		print(self.classify)
+		print(x,y, self.GOODSHOT, self.PERFECTSHOT)
 	'''
 	def check_hit(self,x,y, rad):
 		if(math.sqrt((x)**2 + (y)**2) <= (math.sqrt((self.CENTER_X - 319)**2+(self.CENTER_Y - 204)**2) + rad)):

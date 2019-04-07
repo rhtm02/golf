@@ -39,13 +39,13 @@ class Golf:
 		if (x >= 0) and (y >= 0):
 			theta = theta
 		elif (x < 0) and (y >= 0):
-			theta = theta + math.pi
+			theta = theta
 		elif (x < 0) and (y < 0):
 			theta = theta + 2*math.pi
 		else:
-			theta = theta
+			theta = theta + 2*math.pi
 		# 1,2,3,4 = GoodLeftFront,GoodRightFront,GoodRightRear,GoodLeftRear
-		if (self.PERFECTSHOT >= math.sqrt(x**2 + y**2)):
+		if ((math.sqrt(x**2 + y**2) <= self.PERFECTSHOT)):
 			self.classify = 0
 		elif (((theta > 0) and (theta <= math.pi/2)) and ((math.sqrt(x**2 + y**2) > self.PERFECTSHOT) and (math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
 			self.classify = 2
