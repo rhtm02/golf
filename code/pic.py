@@ -1,13 +1,35 @@
 #! usr/bin/env python 
-
-import numpy as np
 import cv2
+import numpy as np
 
-img = cv2.imread('/home/hyungjun/project/golf/test.png',0)
-cv2.imshow('image',img)
-k = cv2.waitKey(0)
-if k == 27:         # wait for ESC key to exit
-    cv2.destroyAllWindows()
-elif k == ord('s'): # wait for 's' key to save and exit
-    cv2.imwrite('messigray.png',img)
-    cv2.destroyAllWindows()
+
+img = cv2.imread('/home/hyungjun/project/golf/code/C004.png', 0)
+drawing = False 
+
+ix,iy = -1,-1
+
+def draw_circle(event, x,y, flags, param):
+    global ix,iy, drawing, mode
+
+    if event == cv2.EVENT_LBUTTONDOWN: 
+        drawing = True 
+        ix, iy = x,y
+        print(ix,iy)
+
+    elif event == cv2.EVENT_LBUTTONUP:
+        drawing = False             
+        cv2.circle(img,(x,y),1,(0,255,0),-1)
+
+cv2.namedWindow('image')
+cv2.setMouseCallback('image',draw_circle)
+
+while True:
+	cv2.imshow('image', img)
+
+	k = cv2.waitKey(1) & 0xFF
+
+	
+	if k == 27:        
+        	break
+
+cv2.destroyAllWindows()

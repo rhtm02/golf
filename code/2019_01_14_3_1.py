@@ -25,36 +25,50 @@ class Golf:
 		self.CENTER_X = 301
 		self.CENTER_Y = 204
 		#362,205 Good Shot
-		self.PERFECTSHOT = math.sqrt(((364 - self.CENTER_X)**2 + (205 - self.CENTER_Y)**2)) 
-		self.GOODSHOT = math.sqrt((485- self.CENTER_X)**2 + (205 - self.CENTER_Y)**2) #ToDo ADD PIXEL
-		self.RADIUS = math.sqrt(((487 - self.CENTER_X)**2 + (205 - self.CENTER_Y)**2))
+		self.PLUSTHETA = math.asin(math.sqrt(((321 - self.CENTER_X)**2 + (204 - self.CENTER_Y)**2)) / self.CENTER_X)
+		self.MINUSTHETA = -math.asin(math.sqrt(((321 - self.CENTER_X)**2 + (204 - self.CENTER_Y)**2)) / self.CENTER_X)
+		print(self.PLUSTHETA, self.MINUSTHETA)
+		self.DISTANCE_LOW = 239
+		self.DISTANCE_HIGH = (301 - 239) + 301
+
+		self.CIRCLE_CENTER_X = -301
+		self.CIRCLE_CENTER_Y = 0 		#361,256
 		#361,256
-		#361,256
+		self.HIT = 0
+		self.HIT_DISTANCE = math.sqrt((self.CENTER_X - 319)**2 + (self.CENTER_Y - 204)**2)
+
 
 	def label(self, x,y):
-		theta = math.atan2(y,x)
-		print(theta,math.pi)
-		if (x >= 0) and (y >= 0):
-			theta = theta
-		elif (x < 0) and (y >= 0):
-			theta = theta 
-		elif (x < 0) and (y < 0):
-			theta = theta + 2*math.pi
-		else:
-			theta = theta + 2*math.pi
-		# 1,2,3,4 = GoodLeftFront,GoodRightFront,GoodRightRear,GoodLeftRear
-		if (self.PERFECTSHOT >= math.sqrt(x**2 + y**2)):
-			self.classify = 0
-		elif (((theta > 0) and (theta <= math.pi/2)) and ((math.sqrt(x**2 + y**2) > self.PERFECTSHOT) and (math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
-			self.classify = 2
-		elif((theta > math.pi/2) and (theta <= math.pi) and ((math.sqrt(x**2 + y**2) > self.PERFECTSHOT) and(math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
+		print(x,y)
+		distance = math.sqrt((self.CIRCLE_CENTER_X - x)**2 + (self.CIRCLE_CENTER_Y - y)**2)
+		theta = math.atan2((y - self.CIRCLE_CENTER_Y), (x - self.CIRCLE_CENTER_X))
+		
+			
+		
+		print(y - self.CIRCLE_CENTER_Y, x - self.CIRCLE_CENTER_X)
+		print(distance, theta)
+		if ((distance < self.DISTANCE_LOW) and (theta > self.PLUSTHETA) and (self.HIT != 1)):
+			self.classify = 0 
+		elif ((distance < self.DISTANCE_LOW) and ((theta <= self.PLUSTHETA) and (theta > self.MINUSTHETA)) and (self.HIT != 1)):
 			self.classify = 1
-		elif ((theta > math.pi) and (theta <= ((math.pi/2)*3)) and((math.sqrt(x**2 + y**2) > self.PERFECTSHOT) and (math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
-			self.classify = 4
-		elif ((theta > ((math.pi/2)*3)) and (theta <= (math.pi*2)) and((math.sqrt(x**2 + y**2) > self.PERFECTSHOT) and (math.sqrt(x**2 + y**2) <= self.GOODSHOT))):
-			self.classify = 3
+		elif ((distance < self.DISTANCE_LOW) and (theta <= self.MINUSTHETA) and (self.HIT != 1)):
+			self.classify = 2 
+		elif (((distance >= self.DISTANCE_LOW) and (distance < self.DISTANCE_HIGH)) and (theta > self.PLUSTHETA) and (self.HIT != 1)):
+			self.classify = 3 
+		elif (((distance >= self.DISTANCE_LOW) and (distance < self.DISTANCE_HIGH)) and ((theta <= self.PLUSTHETA) and (theta > self.MINUSTHETA)) and (self.HIT != 1)):
+			self.classify = 4 
+		elif (((distance >= self.DISTANCE_LOW) and (distance < self.DISTANCE_HIGH)) and (theta <= self.MINUSTHETA) and (self.HIT != 1)):
+			self.classify = 5 
+		elif ((distance >= self.DISTANCE_HIGH) and (theta > self.PLUSTHETA) and (self.HIT != 1)):
+			self.classify = 6 
+		elif ((distance >= self.DISTANCE_HIGH) and ((theta <= self.PLUSTHETA) and (theta > self.MINUSTHETA)) and (self.HIT != 1)):
+			self.classify = 7 
+		elif ((distance >= self.DISTANCE_HIGH) and (theta <= self.MINUSTHETA) and (self.HIT != 1)):
+			self.classify = 8 
+		elif (self.HIT == 1):
+			self.classify = 7
 		else:
-			self.classify = 5
+			self.classify = 1
 		print(self.classify)
 	
 	def findObjectAndDraw(self,bimage, src, lst_x, lst_y, t):
@@ -80,6 +94,8 @@ class Golf:
 						if (len(lst_x) != 0)  and ((lst_x[-1] == x) and (lst_y[-1] == y)):
 							continue
 						else:
+							if ((self.HIT_DISTANCE + rad) > math.sqrt((self.CENTER_X - x)**2 + (self.CENTER_Y - y)**2)):
+								self.HIT = 1
 							lst_x.append(x)
 							lst_y.append(y)
 		return res, lst_x,lst_y
@@ -125,7 +141,10 @@ class Golf:
 			if key == 27:
 				break
 		if(len(data_x) != 0 ):	
+			if ((self.HIT_DISTANCE > math.sqrt((data_x[-1] - self.CENTER_X)**2 + (data_y[-1] - self.CENTER_Y)**2))):
+				self.HIT = 0
 			self.label(data_x[-1], data_y[-1])
+#			self.label(data_x[-1], data_y[-1])
 		f.write(unicode(count))
 		f.write(unicode(' '))
 		#f.write(unicode('\n'))
